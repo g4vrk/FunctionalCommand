@@ -2,21 +2,26 @@ package com.g4vrk.functionalCommand.registry;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class BaseCommandRegistry implements CommandRegistry {
+public class PaperCommandRegistry implements CommandRegistry {
 
     private final CommandMap commandMap;
     private final Map<String, Command> knownCommands;
 
-    protected BaseCommandRegistry(CommandMap commandMap, Map<String, Command> knownCommands) {
+    private final Logger logger = LoggerFactory.getLogger("CommandRegistry");
+
+    protected PaperCommandRegistry(CommandMap commandMap, Map<String, Command> knownCommands) {
         this.commandMap = commandMap;
         this.knownCommands = knownCommands;
     }
@@ -28,26 +33,29 @@ public class BaseCommandRegistry implements CommandRegistry {
 
     @Override
     public @NotNull Map<String, Command> getKnownCommands() {
-        return Collections.unmodifiableMap(knownCommands);
+        return new HashMap<>(knownCommands);
     }
 
     public @NotNull Map<String, Command> getKnownCommands(@NotNull Predicate<Command> predicate) {
         return knownCommands.entrySet().stream()
                 .filter(e -> predicate.test(e.getValue()))
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
     public void register(@NotNull Plugin plugin, @NotNull Command command) {
-        Validate.notNull(plugin, "@NotNull Plugin cannot be null");
-        Validate.notNull(command, "@NotNull Command cannot be null");
+        Validate.notNull(plugin, "plugin cannot be null");
+        Validate.notNull(command, "command cannot be null");
 
         unregister(command.getName());
 
+        String pluginName = plugin.getName().toLowerCase(Locale.ROOT);
         commandMap.register(
-                plugin.getName().toLowerCase(Locale.ROOT),
+                pluginName,
                 command
         );
+
+        logger.info("Команда /{}:{} зарегистрирована плагином {}.", pluginName, command.getName(), pluginName);
     }
 
     @Override
@@ -86,7 +94,7 @@ public class BaseCommandRegistry implements CommandRegistry {
 
     @Override
     public void unregister(@NotNull Command command) {
-        Validate.notNull(command, "Command cannot be null");
+        Validate.notNull(command, "command cannot be null");
 
         Iterator<Map.Entry<String, Command>> iterator = knownCommands.entrySet().iterator();
 
@@ -129,7 +137,7 @@ public class BaseCommandRegistry implements CommandRegistry {
 
     @Override
     public @NotNull Collection<Command> getAllCommands() {
-        return Set.copyOf(knownCommands.values());
+        return new HashSet<>(knownCommands.values());
     }
 
     @Override
@@ -139,7 +147,7 @@ public class BaseCommandRegistry implements CommandRegistry {
         return knownCommands.entrySet().stream()
                 .filter(e -> e.getKey().toLowerCase(Locale.ROOT).startsWith(namespace))
                 .map(Map.Entry::getValue)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -1,4 +1,20 @@
 package com.g4vrk.functionalCommand.argument.types;
 
-public class GreedyStringArgument {
+import com.g4vrk.functionalCommand.argument.Argument;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.bukkit.command.CommandSender;
+
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+
+public class GreedyStringArgument extends Argument<CommandSender> {
+
+    public GreedyStringArgument(String name) {
+        super(name);
+    }
+
+    @Override
+    public RequiredArgumentBuilder<CommandSender, ?> argumentBuilder() {
+        return argument(getName(), StringArgumentType.greedyString());
+    }
 }

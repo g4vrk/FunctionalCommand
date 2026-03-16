@@ -1,19 +1,17 @@
 package com.g4vrk.functionalCommand.argument;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class CommandArgument<S> {
+@Getter @Setter
+public abstract class Argument<S> {
 
-    private final String name;
+    private String name;
 
-    protected CommandArgument(String name) {
+    protected Argument(String name) {
         this.name = name;
     }
 
-    public String name() {
-        return name;
-    }
-
-    public abstract ArgumentBuilder<S, ?> brigadier();
-
+    public abstract ArgumentBuilder<S, ?> argumentBuilder();
 }
