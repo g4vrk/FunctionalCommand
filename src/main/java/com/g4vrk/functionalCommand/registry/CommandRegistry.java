@@ -143,7 +143,7 @@ public interface CommandRegistry {
 
 
     /**
-     * Создает новый реестр, комманд исходя из обьекта сервера.
+     * Создает новый реестр команд исходя из обьекта сервера.
      *
      * @param server обьект сервера
      * @return новый реестр {@link CommandRegistry}

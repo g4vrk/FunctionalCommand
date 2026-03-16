@@ -80,9 +80,11 @@ public abstract class AbstractCommand extends Command {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender,
-                           @NotNull String alias,
-                           @NotNull String[] args) {
+    public boolean execute(
+            @NotNull CommandSender sender,
+            @NotNull String alias,
+            @NotNull String[] args
+    ) {
 
         String input;
 
@@ -102,9 +104,10 @@ public abstract class AbstractCommand extends Command {
     }
 
     @Override
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender,
-                                             @NotNull String alias,
-                                             @NotNull String[] args
+    public @NotNull List<String> tabComplete(
+            @NotNull CommandSender sender,
+            @NotNull String alias,
+            @NotNull String[] args
     ) {
         try {
 
