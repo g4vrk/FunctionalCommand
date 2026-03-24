@@ -45,7 +45,7 @@ public interface CommandRegistry {
     /**
      * Регистрирует команду от имени плагина.
      *
-     * @param plugin владелец команды
+     * @param plugin  владелец команды
      * @param command команда
      */
     void register(@NotNull Plugin plugin, @NotNull Command command);
@@ -53,7 +53,7 @@ public interface CommandRegistry {
     /**
      * Регистрирует несколько команд.
      *
-     * @param plugin владелец команд
+     * @param plugin   владелец команд
      * @param commands команды
      */
     void registerAll(@NotNull Plugin plugin, @NotNull Command... commands);
@@ -69,7 +69,7 @@ public interface CommandRegistry {
     /**
      * Заменяет команду по имени.
      *
-     * @param oldName имя существующей команды
+     * @param oldName    имя существующей команды
      * @param newCommand новая команда
      */
     void override(@NotNull String oldName, @NotNull Command newCommand);

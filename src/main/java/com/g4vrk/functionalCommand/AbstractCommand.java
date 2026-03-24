@@ -7,7 +7,6 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
@@ -133,7 +132,7 @@ public abstract class AbstractCommand extends Command {
         }
     }
 
-    private LiteralArgumentBuilder<CommandSender> cloneForCommodore() {
+    protected LiteralArgumentBuilder<CommandSender> cloneForCommodore() {
         LiteralCommandNode<CommandSender> built = root.build();
 
         //noinspection unchecked
@@ -142,7 +141,7 @@ public abstract class AbstractCommand extends Command {
 
     private ArgumentBuilder<CommandSender, ?> cloneNode(CommandNode<CommandSender> node) {
 
-        ArgumentBuilder<CommandSender, ?> builder;
+        final ArgumentBuilder<CommandSender, ?> builder;
 
         if (node instanceof LiteralCommandNode<CommandSender> literal)
             builder = LiteralArgumentBuilder.literal(literal.getLiteral());
@@ -159,8 +158,19 @@ public abstract class AbstractCommand extends Command {
         return builder;
     }
 
-    public void register(@NotNull Plugin plugin) {
-        CommandRegistry.of(plugin.getServer()).register(plugin, this);
+    public void register(@NotNull Plugin plugin, boolean override) {
+
+        final CommandRegistry commandRegistry = CommandRegistry.of(plugin.getServer());
+
+        if (override) {
+            if (commandRegistry.getCommand(getName()).isEmpty()) {
+                commandRegistry.register(plugin, this);
+            } else {
+                commandRegistry.override(getName(), this);
+            }
+        } else {
+            commandRegistry.register(plugin, this);
+        }
 
         if (CommodoreProvider.isSupported()) {
             Commodore commodore = CommodoreProvider.getCommodore(plugin);

@@ -12,6 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class BooleanArgument extends Argument<CommandSender> {
 
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
+
+    private static final char T = 't';
+    private static final char F = 'f';
+
     public BooleanArgument(String name) {
         super(name);
     }
@@ -28,8 +34,21 @@ public class BooleanArgument extends Argument<CommandSender> {
     private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
         String remaining = sb.getRemaining().toLowerCase();
 
-        if ("true".startsWith(remaining)) sb.suggest("true");
-        if ("false".startsWith(remaining)) sb.suggest("false");
+        if (remaining.isEmpty()) {
+            sb.suggest(TRUE);
+            sb.suggest(FALSE);
+
+            return sb.buildFuture();
+        }
+
+        switch (remaining.charAt(0)) {
+            case T -> sb.suggest(TRUE);
+            case F -> sb.suggest(FALSE);
+            default -> {
+                sb.suggest(TRUE);
+                sb.suggest(FALSE);
+            }
+        }
 
         return sb.buildFuture();
     }

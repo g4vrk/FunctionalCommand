@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public abstract class Command extends org.bukkit.command.Command {
 
     private CommandExecutor<CommandContext> commandExecutor;

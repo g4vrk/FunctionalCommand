@@ -2,9 +2,8 @@ package com.g4vrk.functionalCommand.argument;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+@Getter
 public abstract class Argument<S> {
 
     private String name;

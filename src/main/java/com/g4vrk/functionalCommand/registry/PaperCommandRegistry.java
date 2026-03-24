@@ -2,7 +2,6 @@ package com.g4vrk.functionalCommand.registry;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
