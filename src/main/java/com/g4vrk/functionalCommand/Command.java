@@ -49,7 +49,7 @@ public abstract class Command extends org.bukkit.command.Command {
 
     @Override
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-        List<String> completions = suggestionCompleter.onSuggestionRequest(new CommandContext(args, sender));
+        final List<String> completions = suggestionCompleter.onSuggestionRequest(new CommandContext(args, sender));
 
         return completions != null
                 ? completions

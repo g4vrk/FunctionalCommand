@@ -3,11 +3,14 @@ package com.g4vrk.functionalCommand.argument.types;
 import com.g4vrk.functionalCommand.argument.Argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import java.util.Optional;
 
-public class StringArgument extends Argument<CommandSender> {
+public class StringArgument extends Argument<String> {
 
     private final StringArgumentType type;
 
@@ -29,7 +32,20 @@ public class StringArgument extends Argument<CommandSender> {
     }
 
     @Override
-    public ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        return argument(getName(), type);
+    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
+        RequiredArgumentBuilder<CommandSender, ?> builder =
+                RequiredArgumentBuilder.argument(getName(), type);
+
+        builder.executes(context -> 1);
+        return builder;
+    }
+
+    @Override
+    public @NotNull Optional<String> getFromContext(@NotNull CommandContext<CommandSender> context) {
+        try {
+            return Optional.ofNullable(context.getArgument(getName(), String.class));
+        } catch (Throwable t) {
+            return Optional.empty();
+        }
     }
 }

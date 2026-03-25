@@ -36,7 +36,8 @@ public class PaperCommandRegistry implements CommandRegistry {
     }
 
     public @NotNull Map<String, Command> getKnownCommands(@NotNull Predicate<Command> predicate) {
-        return knownCommands.entrySet().stream()
+        return knownCommands.entrySet()
+                .stream()
                 .filter(e -> predicate.test(e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

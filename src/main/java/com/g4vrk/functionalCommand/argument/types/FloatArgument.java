@@ -1,7 +1,7 @@
 package com.g4vrk.functionalCommand.argument.types;
 
 import com.g4vrk.functionalCommand.argument.Argument;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,24 +13,24 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class IntArgument extends Argument<Integer> {
+public class FloatArgument extends Argument<Float> {
 
-    private final int min;
-    private final int max;
+    private final float min;
+    private final float max;
 
-    public IntArgument(String name) {
+    public FloatArgument(String name) {
         super(name);
-        this.min = Integer.MIN_VALUE;
-        this.max = Integer.MAX_VALUE;
+        this.min = Float.MIN_VALUE;
+        this.max = Float.MAX_VALUE;
     }
 
-    public IntArgument(String name, int min) {
+    public FloatArgument(String name, float min) {
         super(name);
         this.min = min;
-        this.max = Integer.MAX_VALUE;
+        this.max = Float.MAX_VALUE;
     }
 
-    public IntArgument(String name, int min, int max) {
+    public FloatArgument(String name, float min, float max) {
         super(name);
         this.min = min;
         this.max = max;
@@ -38,27 +38,36 @@ public class IntArgument extends Argument<Integer> {
 
     @Override
     public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        final RequiredArgumentBuilder<CommandSender, Integer> builder =
-                RequiredArgumentBuilder.argument(getName(), IntegerArgumentType.integer(min, max));
+        final RequiredArgumentBuilder<CommandSender, Float> builder =
+                RequiredArgumentBuilder.argument(getName(), FloatArgumentType.floatArg(min, max));
 
-        builder.executes((context) -> 1);
+        builder.executes(context -> 1);
         builder.suggests((ctx, sb) -> suggest(sb));
         return builder;
+    }
+
+    @Override
+    public @NotNull Optional<Float> getFromContext(@NotNull CommandContext<CommandSender> context) {
+        try {
+            return Optional.ofNullable(context.getArgument(getName(), Float.class));
+        } catch (Throwable t) {
+            return Optional.empty();
+        }
     }
 
     private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
         String input = sb.getRemaining();
 
         if (input.isEmpty()) {
-            sb.suggest("0");
+            sb.suggest("0.0");
             return sb.buildFuture();
         }
 
-        int value;
+        double value;
         try {
-            value = Integer.parseInt(input);
+            value = Double.parseDouble(input);
         } catch (NumberFormatException e) {
-            sb.suggest("Неверное целое число!");
+            sb.suggest("Неверное число!");
             return sb.buildFuture();
         }
 
@@ -74,14 +83,5 @@ public class IntArgument extends Argument<Integer> {
 
         sb.suggest(String.valueOf(value));
         return sb.buildFuture();
-    }
-
-    @Override
-    public @NotNull Optional<Integer> getFromContext(@NotNull CommandContext<CommandSender> context) {
-        try {
-            return Optional.ofNullable(context.getArgument(getName(), Integer.class));
-        } catch (Throwable t) {
-            return Optional.empty();
-        }
     }
 }

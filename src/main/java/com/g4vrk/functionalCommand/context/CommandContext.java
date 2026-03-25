@@ -1,10 +1,9 @@
 package com.g4vrk.functionalCommand.context;
 
-import lombok.Data;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
-@Data
-public final class CommandContext {
-    private final String[] args;
-    private final CommandSender sender;
-}
+public record CommandContext(
+        @NotNull String @NotNull [] args,
+        @NotNull CommandSender sender
+) {}

@@ -4,15 +4,17 @@ import com.g4vrk.functionalCommand.argument.Argument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class ChoiceArgument extends Argument<CommandSender> {
+public class ChoiceArgument extends Argument<String> {
 
     private final List<String> options;
 
@@ -22,25 +24,33 @@ public class ChoiceArgument extends Argument<CommandSender> {
     }
 
     @Override
-    public ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        RequiredArgumentBuilder<CommandSender, String> builder =
+    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
+        final RequiredArgumentBuilder<CommandSender, String> builder =
                 RequiredArgumentBuilder.argument(getName(), StringArgumentType.word());
 
-        builder.suggests((context, suggestionsBuilder) -> suggest(suggestionsBuilder));
-
+        builder.executes(context -> 1);
+        builder.suggests((ctx, sb) -> suggest(sb));
         return builder;
     }
 
-    private CompletableFuture<Suggestions> suggest(SuggestionsBuilder builder) {
+    @Override
+    public @NotNull Optional<String> getFromContext(@NotNull CommandContext<CommandSender> context) {
+        try {
+            return Optional.ofNullable(context.getArgument(getName(), String.class));
+        } catch (Throwable t) {
+            return Optional.empty();
+        }
+    }
 
-        String remaining = builder.getRemaining().toLowerCase();
+    private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
+        String remaining = sb.getRemaining().toLowerCase();
 
         for (String option : options) {
             if (option.toLowerCase().startsWith(remaining)) {
-                builder.suggest(option);
+                sb.suggest(option);
             }
         }
 
-        return builder.buildFuture();
+        return sb.buildFuture();
     }
 }
