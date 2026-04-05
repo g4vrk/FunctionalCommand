@@ -12,18 +12,18 @@ import java.util.List;
 
 @Getter
 @Setter
-public abstract class Command extends org.bukkit.command.Command {
+public abstract class BaseCommand extends org.bukkit.command.Command {
 
     private CommandExecutor<CommandContext> commandExecutor;
     private SuggestionCompleter<CommandContext> suggestionCompleter;
 
-    public Command(
+    public BaseCommand(
             @NotNull String name
     ) {
         super(name);
     }
 
-    public Command(
+    public BaseCommand(
             @NotNull String name,
             @NotNull CommandExecutor<CommandContext> commandExecutor
     ) {
@@ -31,7 +31,7 @@ public abstract class Command extends org.bukkit.command.Command {
         this.commandExecutor = commandExecutor;
     }
 
-    public Command(
+    public BaseCommand(
             @NotNull String name,
             @NotNull CommandExecutor<CommandContext> commandExecutor,
             @NotNull SuggestionCompleter<CommandContext> suggestionCompleter

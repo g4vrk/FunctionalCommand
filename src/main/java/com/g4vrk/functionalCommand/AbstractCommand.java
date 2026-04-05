@@ -2,6 +2,7 @@ package com.g4vrk.functionalCommand;
 
 import com.g4vrk.functionalCommand.argument.Argument;
 import com.g4vrk.functionalCommand.registry.CommandRegistry;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -14,41 +15,62 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
-public abstract class AbstractCommand extends Command {
+public abstract class AbstractCommand extends BaseCommand {
 
-    private final LiteralArgumentBuilder<CommandSender> root;
+    protected final LiteralArgumentBuilder<CommandSender> root;
 
-    private volatile CommandDispatcher<CommandSender> dispatcher;
-    private volatile boolean treeDirty = true;
+    protected final Predicate<CommandSender> requirement;
+    protected final Command<CommandSender> command;
 
-    protected AbstractCommand(@NotNull String name) {
+    protected volatile CommandDispatcher<CommandSender> dispatcher;
+
+    protected AbstractCommand(
+            @NotNull String name,
+            @NotNull Predicate<CommandSender> requirement,
+            @NotNull Command<CommandSender> command
+    ) {
         super(name);
         this.root = LiteralArgumentBuilder.<CommandSender>literal(name)
-                .executes(ctx -> 1);
+                .executes(command)
+                .requires(requirement);
+        this.requirement = requirement;
+        this.command = command;
     }
 
-    protected AbstractCommand then(@NotNull Argument<CommandSender> argument) {
+    public AbstractCommand(
+            @NotNull String name,
+            @NotNull Predicate<CommandSender> requirement
+    ) {
+        this(name, requirement, ctx -> 1);
+    }
+
+    public AbstractCommand(@NotNull String name) {
+        this(name, s -> true);
+    }
+
+    protected AbstractCommand then(@NotNull Argument<?> argument) {
         return then(argument.argumentBuilder());
     }
 
     protected AbstractCommand then(@NotNull ArgumentBuilder<CommandSender, ?> node) {
         root.then(node);
-        treeDirty = true;
+        dispatcher = null;
         return this;
     }
 
     protected AbstractCommand executes(@NotNull com.mojang.brigadier.Command<CommandSender> command) {
         root.executes(command);
-        treeDirty = true;
+        dispatcher = null;
         return this;
     }
 
@@ -56,21 +78,20 @@ public abstract class AbstractCommand extends Command {
         return root;
     }
 
-    private CommandDispatcher<CommandSender> dispatcher() {
+    private CommandDispatcher<CommandSender> getDispatcher() {
 
         CommandDispatcher<CommandSender> local = dispatcher;
 
-        if (local == null || treeDirty) {
+        if (local == null) {
             synchronized (this) {
 
                 local = dispatcher;
 
-                if (local == null || treeDirty) {
+                if (local == null) {
                     local = new CommandDispatcher<>();
                     local.register(root);
 
                     dispatcher = local;
-                    treeDirty = false;
                 }
             }
         }
@@ -84,8 +105,7 @@ public abstract class AbstractCommand extends Command {
             @NotNull String alias,
             @NotNull String[] args
     ) {
-
-        String input;
+        final String input;
 
         if (args.length == 0) {
             input = alias;
@@ -94,7 +114,7 @@ public abstract class AbstractCommand extends Command {
         }
 
         try {
-            dispatcher().execute(input, sender);
+            getDispatcher().execute(input, sender);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -110,17 +130,15 @@ public abstract class AbstractCommand extends Command {
     ) {
         try {
 
-            String input = alias;
-            if (args.length > 0)
-                input += " " + String.join(" ", args);
+            final String input = getName() + (args.length == 0 ? "" : " " + String.join(" ", args));
 
-            ParseResults<CommandSender> parse =
-                    dispatcher().parse(input, sender);
+            final ParseResults<CommandSender> parse =
+                    getDispatcher().parse(input, sender);
 
-            CompletableFuture<Suggestions> future =
-                    dispatcher().getCompletionSuggestions(parse);
+            final CompletableFuture<Suggestions> future =
+                    getDispatcher().getCompletionSuggestions(parse);
 
-            Suggestions suggestions = future.get();
+            final Suggestions suggestions = future.join();
 
             List<String> result = new ArrayList<>();
             suggestions.getList().forEach(s -> result.add(s.getText()));
@@ -128,7 +146,8 @@ public abstract class AbstractCommand extends Command {
             return result;
 
         } catch (Throwable t) {
-            return List.of();
+            t.printStackTrace();
+            return Collections.emptyList();
         }
     }
 
@@ -139,7 +158,7 @@ public abstract class AbstractCommand extends Command {
         return (LiteralArgumentBuilder<CommandSender>) cloneNode(built);
     }
 
-    private ArgumentBuilder<CommandSender, ?> cloneNode(CommandNode<CommandSender> node) {
+    private ArgumentBuilder<CommandSender, ?> cloneNode(@NotNull CommandNode<CommandSender> node) {
 
         final ArgumentBuilder<CommandSender, ?> builder;
 
