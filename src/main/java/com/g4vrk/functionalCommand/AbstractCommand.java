@@ -27,12 +27,9 @@ import java.util.function.Predicate;
 
 public abstract class AbstractCommand extends BaseCommand {
 
-    protected final LiteralArgumentBuilder<CommandSender> root;
+    private final LiteralArgumentBuilder<CommandSender> root;
 
-    protected final Predicate<CommandSender> requirement;
-    protected final Command<CommandSender> command;
-
-    protected volatile CommandDispatcher<CommandSender> dispatcher;
+    private volatile CommandDispatcher<CommandSender> dispatcher;
 
     protected AbstractCommand(
             @NotNull String name,
@@ -43,8 +40,6 @@ public abstract class AbstractCommand extends BaseCommand {
         this.root = LiteralArgumentBuilder.<CommandSender>literal(name)
                 .executes(command)
                 .requires(requirement);
-        this.requirement = requirement;
-        this.command = command;
     }
 
     public AbstractCommand(
@@ -68,13 +63,19 @@ public abstract class AbstractCommand extends BaseCommand {
         return this;
     }
 
-    protected AbstractCommand executes(@NotNull com.mojang.brigadier.Command<CommandSender> command) {
+    protected AbstractCommand requires(@NotNull Predicate<CommandSender> requirement) {
+        root.requires(requirement);
+        dispatcher = null;
+        return this;
+    }
+
+    protected AbstractCommand executes(@NotNull Command<CommandSender> command) {
         root.executes(command);
         dispatcher = null;
         return this;
     }
 
-    protected LiteralArgumentBuilder<CommandSender> root() {
+    protected LiteralArgumentBuilder<CommandSender> getRoot() {
         return root;
     }
 
