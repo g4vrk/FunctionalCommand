@@ -8,6 +8,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
@@ -116,6 +117,8 @@ public abstract class AbstractCommand extends BaseCommand {
 
         try {
             getDispatcher().execute(input, sender);
+        } catch (final CommandSyntaxException ex) {
+            sender.sendMessage(ex.getMessage());
         } catch (Throwable t) {
             t.printStackTrace();
         }
