@@ -11,27 +11,27 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class LiteralArgument extends AbstractArgument<String> {
-    protected LiteralArgument(
+    public LiteralArgument(
             @NotNull String name
     ) {
         super(name);
     }
 
-    protected LiteralArgument(
+    public LiteralArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command
     ) {
         super(name, command);
     }
 
-    protected LiteralArgument(
+    public LiteralArgument(
             @NotNull String name,
             @NotNull Predicate<CommandSender> requirement
     ) {
         super(name, requirement);
     }
 
-    protected LiteralArgument(
+    public LiteralArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command,
             @NotNull Predicate<CommandSender> requirement

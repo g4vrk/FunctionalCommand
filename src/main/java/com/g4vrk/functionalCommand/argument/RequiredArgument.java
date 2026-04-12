@@ -18,7 +18,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
     private final ArgumentType<?> type;
     private SuggestionProvider<CommandSender> suggestionsProvider;
 
-    protected RequiredArgument(
+    public RequiredArgument(
             @NotNull String name,
             @NotNull ArgumentType<?> type
     ) {
@@ -26,7 +26,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
         this.type = type;
     }
 
-    protected RequiredArgument(
+    public RequiredArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command,
             @NotNull ArgumentType<?> type
@@ -35,7 +35,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
         this.type = type;
     }
 
-    protected RequiredArgument(
+    public RequiredArgument(
             @NotNull String name,
             @NotNull Predicate<CommandSender> requirement,
             @NotNull ArgumentType<?> type
@@ -44,7 +44,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
         this.type = type;
     }
 
-    protected RequiredArgument(
+    public RequiredArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command,
             @NotNull Predicate<CommandSender> requirement,
@@ -54,7 +54,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
         this.type = type;
     }
 
-    protected RequiredArgument(
+    public RequiredArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command,
             @NotNull Predicate<CommandSender> requirement,
