@@ -1,5 +1,6 @@
 package com.g4vrk.functionalCommand;
 
+import com.g4vrk.functionalCommand.argument.AbstractArgument;
 import com.g4vrk.functionalCommand.argument.Argument;
 import com.g4vrk.functionalCommand.registry.CommandRegistry;
 import com.mojang.brigadier.Command;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public abstract class AbstractCommand extends BaseCommand {
+public abstract class AbstractCommand extends org.bukkit.command.Command {
 
     private final LiteralArgumentBuilder<CommandSender> root;
 
@@ -54,23 +55,29 @@ public abstract class AbstractCommand extends BaseCommand {
         this(name, s -> true);
     }
 
-    protected AbstractCommand then(@NotNull Argument<?> argument) {
-        return then(argument.argumentBuilder());
+    protected @NotNull AbstractCommand then(@NotNull Argument<?> argument) {
+        return then(argument.buildNode());
     }
 
-    protected AbstractCommand then(@NotNull ArgumentBuilder<CommandSender, ?> node) {
+    protected @NotNull AbstractCommand then(@NotNull ArgumentBuilder<CommandSender, ?> node) {
         root.then(node);
         dispatcher = null;
         return this;
     }
 
-    protected AbstractCommand requires(@NotNull Predicate<CommandSender> requirement) {
+    protected @NotNull AbstractCommand then(@NotNull CommandNode<CommandSender> node) {
+        root.then(node);
+        dispatcher = null;
+        return this;
+    }
+
+    protected @NotNull AbstractCommand requires(@NotNull Predicate<CommandSender> requirement) {
         root.requires(requirement);
         dispatcher = null;
         return this;
     }
 
-    protected AbstractCommand executes(@NotNull Command<CommandSender> command) {
+    protected @NotNull AbstractCommand executes(@NotNull Command<CommandSender> command) {
         root.executes(command);
         dispatcher = null;
         return this;
