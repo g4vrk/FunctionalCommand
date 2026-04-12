@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class StringArgument extends RequiredArgument<String> {
 
-    private StringArgument(
+    protected StringArgument(
             @NotNull String name,
             @NotNull StringArgumentType type
     ) {

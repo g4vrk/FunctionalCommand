@@ -15,12 +15,12 @@ import java.util.function.Predicate;
 
 public abstract class RequiredArgument<T> extends AbstractArgument<T> {
 
-    private final ArgumentType<T> type;
+    private final ArgumentType<?> type;
     private SuggestionProvider<CommandSender> suggestionsProvider;
 
     protected RequiredArgument(
             @NotNull String name,
-            @NotNull ArgumentType<T> type
+            @NotNull ArgumentType<?> type
     ) {
         super(name);
         this.type = type;
@@ -29,7 +29,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
     protected RequiredArgument(
             @NotNull String name,
             @NotNull Command<CommandSender> command,
-            @NotNull ArgumentType<T> type
+            @NotNull ArgumentType<?> type
     ) {
         super(name, command);
         this.type = type;
@@ -38,7 +38,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
     protected RequiredArgument(
             @NotNull String name,
             @NotNull Predicate<CommandSender> requirement,
-            @NotNull ArgumentType<T> type
+            @NotNull ArgumentType<?> type
     ) {
         super(name, requirement);
         this.type = type;
@@ -48,7 +48,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
             @NotNull String name,
             @NotNull Command<CommandSender> command,
             @NotNull Predicate<CommandSender> requirement,
-            @NotNull ArgumentType<T> type
+            @NotNull ArgumentType<?> type
     ) {
         super(name, command, requirement);
         this.type = type;
@@ -59,7 +59,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
             @NotNull Command<CommandSender> command,
             @NotNull Predicate<CommandSender> requirement,
             @NotNull SuggestionProvider<CommandSender> suggestionsProvider,
-            @NotNull ArgumentType<T> type
+            @NotNull ArgumentType<?> type
     ) {
         super(name, command, requirement);
         this.suggestionsProvider = suggestionsProvider;
@@ -71,7 +71,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
         return this;
     }
 
-    public @NotNull ArgumentType<T> getType() {
+    public @NotNull ArgumentType<?> getType() {
         return type;
     }
 
@@ -81,7 +81,7 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
 
     @Override
     public @NotNull CommandNode<CommandSender> buildNode() {
-        final RequiredArgumentBuilder<CommandSender, T> argumentBuilder = RequiredArgumentBuilder.argument(getName(), type);
+        final RequiredArgumentBuilder<CommandSender, ?> argumentBuilder = RequiredArgumentBuilder.argument(getName(), type);
 
         argumentBuilder.requires(getRequirement());
         argumentBuilder.executes(getCommand());

@@ -38,7 +38,7 @@ public class BooleanArgument extends RequiredArgument<Boolean> {
     }
 
     private @NotNull CompletableFuture<Suggestions> suggest(final @NotNull SuggestionsBuilder suggestionsBuilder) {
-        final String remaining = suggestionsBuilder.getRemaining().toLowerCase();
+        final String remaining = suggestionsBuilder.getRemainingLowerCase();
 
         if (remaining.isEmpty()) {
             suggestionsBuilder.suggest(TRUE_STRING);
