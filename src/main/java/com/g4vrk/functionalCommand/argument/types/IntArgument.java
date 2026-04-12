@@ -1,9 +1,7 @@
 package com.g4vrk.functionalCommand.argument.types;
 
-import com.g4vrk.functionalCommand.argument.Argument;
+import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -13,75 +11,49 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class IntArgument extends Argument<Integer> {
+public class IntArgument extends RequiredArgument<Integer> {
 
-    private final int min;
-    private final int max;
-
-    public IntArgument(String name) {
-        super(name);
-        this.min = Integer.MIN_VALUE;
-        this.max = Integer.MAX_VALUE;
+    public IntArgument(
+            @NotNull String name
+    ) {
+        super(name, IntegerArgumentType.integer());
+        suggests((context, builder) -> suggest(builder));
     }
 
-    public IntArgument(String name, int min) {
-        super(name);
-        this.min = min;
-        this.max = Integer.MAX_VALUE;
+    public IntArgument(
+            @NotNull String name,
+            int min
+    ) {
+        super(name, IntegerArgumentType.integer(min));
+        suggests((context, builder) -> suggest(builder));
     }
 
-    public IntArgument(String name, int min, int max) {
-        super(name);
-        this.min = min;
-        this.max = max;
-    }
-
-    @Override
-    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        final RequiredArgumentBuilder<CommandSender, Integer> builder =
-                RequiredArgumentBuilder.argument(getName(), IntegerArgumentType.integer(min, max));
-
-        builder.executes((context) -> 1);
-        builder.suggests((ctx, sb) -> suggest(sb));
-        return builder;
-    }
-
-    private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
-        String input = sb.getRemaining();
-
-        if (input.isEmpty()) {
-            sb.suggest("0");
-            return sb.buildFuture();
-        }
-
-        int value;
-        try {
-            value = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            sb.suggest("Неверное целое число!");
-            return sb.buildFuture();
-        }
-
-        if (value < min) {
-            sb.suggest(input + " < " + min + "!");
-            return sb.buildFuture();
-        }
-
-        if (value > max) {
-            sb.suggest(input + " > " + max + "!");
-            return sb.buildFuture();
-        }
-
-        sb.suggest(String.valueOf(value));
-        return sb.buildFuture();
+    public IntArgument(
+            @NotNull String name,
+            int min,
+            int max
+    ) {
+        super(name, IntegerArgumentType.integer(min, max));
+        suggests((context, builder) -> suggest(builder));
     }
 
     @Override
-    public @NotNull Optional<Integer> getFromContext(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Integer> parse(@NotNull CommandContext<CommandSender> context) {
         try {
             return Optional.ofNullable(context.getArgument(getName(), Integer.class));
         } catch (Throwable t) {
             return Optional.empty();
         }
+    }
+
+    private @NotNull CompletableFuture<Suggestions> suggest(final @NotNull SuggestionsBuilder suggestionsBuilder) {
+        final String input = suggestionsBuilder.getRemaining();
+
+        if (input.isEmpty()) {
+            suggestionsBuilder.suggest("0.0");
+            return suggestionsBuilder.buildFuture();
+        }
+
+        return suggestionsBuilder.buildFuture();
     }
 }

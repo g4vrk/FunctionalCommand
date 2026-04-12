@@ -36,10 +36,13 @@ public class PaperCommandRegistry implements CommandRegistry {
     }
 
     public @NotNull Map<String, Command> getKnownCommands(@NotNull Predicate<Command> predicate) {
-        return knownCommands.entrySet()
-                .stream()
-                .filter(e -> predicate.test(e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Validate.notNull(predicate, "predicate cannot be null");
+
+        Map<String, Command> map = new HashMap<>();
+        for (Map.Entry<String, Command> e : knownCommands.entrySet()) {
+            if (predicate.test(e.getValue())) map.put(e.getKey(), e.getValue());
+        }
+        return map;
     }
 
     @Override

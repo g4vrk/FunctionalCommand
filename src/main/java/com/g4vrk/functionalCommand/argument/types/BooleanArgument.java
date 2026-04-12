@@ -1,9 +1,8 @@
 package com.g4vrk.functionalCommand.argument.types;
 
-import com.g4vrk.functionalCommand.argument.Argument;
+import com.g4vrk.functionalCommand.argument.RequiredArgument;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -12,31 +11,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
-public class BooleanArgument extends Argument<Boolean> {
+public class BooleanArgument extends RequiredArgument<Boolean> {
 
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
+    private static final String TRUE_STRING = "true";
+    private static final String FALSE_STRING = "false";
 
-    private static final char T = 't';
-    private static final char F = 'f';
+    private static final char TRUE_FIRST_CHAR = 't';
+    private static final char FALSE_FIRST_CHAR = 'f';
 
-    public BooleanArgument(String name) {
-        super(name);
+    public BooleanArgument(
+            @NotNull String name
+    ) {
+        super(name, BoolArgumentType.bool());
+        suggests((context, builder) -> suggest(builder));
     }
 
     @Override
-    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        RequiredArgumentBuilder<CommandSender, Boolean> builder =
-                RequiredArgumentBuilder.argument(getName(), BoolArgumentType.bool());
-
-        builder.executes(context -> 1);
-        builder.suggests((ctx, sb) -> suggest(sb));
-        return builder;
-    }
-
-    @Override
-    public @NotNull Optional<Boolean> getFromContext(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Boolean> parse(@NotNull CommandContext<CommandSender> context) {
         try {
             return Optional.ofNullable(context.getArgument(getName(), Boolean.class));
         } catch (Throwable t) {
@@ -44,25 +37,25 @@ public class BooleanArgument extends Argument<Boolean> {
         }
     }
 
-    private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
-        String remaining = sb.getRemaining().toLowerCase();
+    private @NotNull CompletableFuture<Suggestions> suggest(final @NotNull SuggestionsBuilder suggestionsBuilder) {
+        final String remaining = suggestionsBuilder.getRemaining().toLowerCase();
 
         if (remaining.isEmpty()) {
-            sb.suggest(TRUE);
-            sb.suggest(FALSE);
+            suggestionsBuilder.suggest(TRUE_STRING);
+            suggestionsBuilder.suggest(FALSE_STRING);
 
-            return sb.buildFuture();
+            return suggestionsBuilder.buildFuture();
         }
 
         switch (remaining.charAt(0)) {
-            case T -> sb.suggest(TRUE);
-            case F -> sb.suggest(FALSE);
+            case TRUE_FIRST_CHAR -> suggestionsBuilder.suggest(TRUE_STRING);
+            case FALSE_FIRST_CHAR -> suggestionsBuilder.suggest(FALSE_STRING);
             default -> {
-                sb.suggest(TRUE);
-                sb.suggest(FALSE);
+                suggestionsBuilder.suggest(TRUE_STRING);
+                suggestionsBuilder.suggest(FALSE_STRING);
             }
         }
 
-        return sb.buildFuture();
+        return suggestionsBuilder.buildFuture();
     }
 }

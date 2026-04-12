@@ -2,69 +2,30 @@ package com.g4vrk.functionalCommand.argument;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import lombok.Getter;
+import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-@Getter
-public abstract class Argument<T> {
-    private final String name;
-    private Command<CommandSender> command;
-    private Predicate<CommandSender> requirement;
+public interface Argument<T>  {
+    @NotNull String getName();
 
-    protected Argument(
-            @NotNull String name
-    ) {
-        this(name, (ctx) -> Command.SINGLE_SUCCESS, (s) -> true);
-    }
+    @NotNull Command<CommandSender> getCommand();
+    @NotNull Predicate<CommandSender> getRequirement();
 
-    protected Argument(
-            @NotNull String name,
-            @NotNull Command<CommandSender> command
-    ) {
-        this(name, command, (s) -> true);
-    }
+    @NotNull List<CommandNode<CommandSender>> getChildren();
 
-    protected Argument(
-            @NotNull String name,
-            @NotNull Predicate<CommandSender> requirement
-    ) {
-        this(name, (cxt) -> Command.SINGLE_SUCCESS, requirement);
-    }
+    @NotNull AbstractArgument<T> executes(@NotNull Command<CommandSender> command);
+    @NotNull AbstractArgument<T> requires(@NotNull Predicate<CommandSender> requirement);
 
-    protected Argument(
-            @NotNull String name,
-            @NotNull Command<CommandSender> command,
-            @NotNull Predicate<CommandSender> requirement
-    ) {
-        this.name = name;
-        this.command = command;
-        this.requirement = requirement;
-    }
+    @NotNull AbstractArgument<T> then(@NotNull ArgumentBuilder<CommandSender, ?> node);
+    @NotNull AbstractArgument<T> then(@NotNull CommandNode<CommandSender> node);
 
-    public @NotNull Argument<T> executes(final @NotNull Command<CommandSender> command) {
-        this.command = command;
-        return this;
-    }
+    @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context);
 
-    public @NotNull Argument<T> requires(final @NotNull Predicate<CommandSender> requirement) {
-        this.requirement = requirement;
-        return this;
-    }
-
-    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        final ArgumentBuilder<CommandSender, ?> argumentBuilder = LiteralArgumentBuilder.literal(getName());
-
-        argumentBuilder.executes(command);
-        argumentBuilder.requires(requirement);
-
-        return argumentBuilder;
-    }
-
-    public abstract @NotNull Optional<T> getFromContext(@NotNull CommandContext<CommandSender> context);
+    @NotNull CommandNode<CommandSender> buildNode();
 }

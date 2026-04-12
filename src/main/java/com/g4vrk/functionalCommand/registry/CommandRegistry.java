@@ -143,9 +143,9 @@ public interface CommandRegistry {
 
 
     /**
-     * Создает новый реестр команд исходя из обьекта сервера.
+     * Создает новый реестр команд исходя из объекта сервера.
      *
-     * @param server обьект сервера
+     * @param server объект сервера
      * @return новый реестр {@link CommandRegistry}
      */
     static CommandRegistry of(Server server) {

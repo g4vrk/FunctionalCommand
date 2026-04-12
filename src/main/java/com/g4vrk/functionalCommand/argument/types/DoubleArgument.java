@@ -1,9 +1,7 @@
 package com.g4vrk.functionalCommand.argument.types;
 
-import com.g4vrk.functionalCommand.argument.Argument;
+import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -13,41 +11,34 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class DoubleArgument extends Argument<Double> {
+public class DoubleArgument extends RequiredArgument<Double> {
 
-    private final double min;
-    private final double max;
-
-    public DoubleArgument(String name) {
-        super(name);
-        this.min = Double.MIN_VALUE;
-        this.max = Double.MAX_VALUE;
+    public DoubleArgument(
+            @NotNull String name
+    ) {
+        super(name, DoubleArgumentType.doubleArg());
+        suggests((context, builder) -> suggest(builder));
     }
 
-    public DoubleArgument(String name, double min) {
-        super(name);
-        this.min = min;
-        this.max = Double.MAX_VALUE;
+    public DoubleArgument(
+            @NotNull String name,
+            double min
+    ) {
+        super(name, DoubleArgumentType.doubleArg(min));
+        suggests((context, builder) -> suggest(builder));
     }
 
-    public DoubleArgument(String name, double min, double max) {
-        super(name);
-        this.min = min;
-        this.max = max;
-    }
-
-    @Override
-    public @NotNull ArgumentBuilder<CommandSender, ?> argumentBuilder() {
-        final RequiredArgumentBuilder<CommandSender, Double> builder =
-                RequiredArgumentBuilder.argument(getName(), DoubleArgumentType.doubleArg(min, max));;
-
-        builder.executes(context -> 1);
-        builder.suggests((ctx, sb) -> suggest(sb));
-        return builder;
+    public DoubleArgument(
+            @NotNull String name,
+            double min,
+            double max
+    ) {
+        super(name, DoubleArgumentType.doubleArg(min, max));
+        suggests((context, builder) -> suggest(builder));
     }
 
     @Override
-    public @NotNull Optional<Double> getFromContext(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Double> parse(@NotNull CommandContext<CommandSender> context) {
         try {
             return Optional.ofNullable(context.getArgument(getName(), Double.class));
         } catch (Throwable t) {
@@ -55,33 +46,14 @@ public class DoubleArgument extends Argument<Double> {
         }
     }
 
-    private CompletableFuture<Suggestions> suggest(SuggestionsBuilder sb) {
-        String input = sb.getRemaining();
+    private @NotNull CompletableFuture<Suggestions> suggest(final @NotNull SuggestionsBuilder suggestionsBuilder) {
+        final String input = suggestionsBuilder.getRemaining();
 
         if (input.isEmpty()) {
-            sb.suggest("0.0");
-            return sb.buildFuture();
+            suggestionsBuilder.suggest("0.0");
+            return suggestionsBuilder.buildFuture();
         }
 
-        double value;
-        try {
-            value = Double.parseDouble(input);
-        } catch (NumberFormatException e) {
-            sb.suggest("Неверное число!");
-            return sb.buildFuture();
-        }
-
-        if (value < min) {
-            sb.suggest(input + " < " + min + "!");
-            return sb.buildFuture();
-        }
-
-        if (value > max) {
-            sb.suggest(input + " > " + max + "!");
-            return sb.buildFuture();
-        }
-
-        sb.suggest(String.valueOf(value));
-        return sb.buildFuture();
+        return suggestionsBuilder.buildFuture();
     }
 }
