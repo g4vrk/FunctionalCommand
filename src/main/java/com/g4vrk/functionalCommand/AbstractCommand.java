@@ -1,6 +1,5 @@
 package com.g4vrk.functionalCommand;
 
-import com.g4vrk.functionalCommand.argument.AbstractArgument;
 import com.g4vrk.functionalCommand.argument.Argument;
 import com.g4vrk.functionalCommand.registry.CommandRegistry;
 import com.mojang.brigadier.Command;
@@ -55,35 +54,35 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
         this(name, s -> true);
     }
 
-    protected @NotNull AbstractCommand then(@NotNull Argument<?> argument) {
+    public @NotNull AbstractCommand then(final @NotNull Argument<?> argument) {
         return then(argument.buildNode());
     }
 
-    protected @NotNull AbstractCommand then(@NotNull ArgumentBuilder<CommandSender, ?> node) {
+    public @NotNull AbstractCommand then(final @NotNull ArgumentBuilder<CommandSender, ?> node) {
         root.then(node);
         dispatcher = null;
         return this;
     }
 
-    protected @NotNull AbstractCommand then(@NotNull CommandNode<CommandSender> node) {
+    public @NotNull AbstractCommand then(final @NotNull CommandNode<CommandSender> node) {
         root.then(node);
         dispatcher = null;
         return this;
     }
 
-    protected @NotNull AbstractCommand requires(@NotNull Predicate<CommandSender> requirement) {
+    public @NotNull AbstractCommand requires(final @NotNull Predicate<CommandSender> requirement) {
         root.requires(requirement);
         dispatcher = null;
         return this;
     }
 
-    protected @NotNull AbstractCommand executes(@NotNull Command<CommandSender> command) {
+    public @NotNull AbstractCommand executes(final @NotNull Command<CommandSender> command) {
         root.executes(command);
         dispatcher = null;
         return this;
     }
 
-    protected LiteralArgumentBuilder<CommandSender> getRoot() {
+    public @NotNull LiteralArgumentBuilder<CommandSender> getRootBuilder() {
         return root;
     }
 
