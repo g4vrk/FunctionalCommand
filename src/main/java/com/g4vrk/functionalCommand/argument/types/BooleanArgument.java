@@ -4,6 +4,7 @@ import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class BooleanArgument extends RequiredArgument<Boolean> {
     }
 
     @Override
-    public @NotNull Optional<Boolean> parse(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Boolean> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException {
         try {
             return Optional.ofNullable(context.getArgument(getName(), Boolean.class));
         } catch (Throwable t) {

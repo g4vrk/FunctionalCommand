@@ -3,6 +3,7 @@ package com.g4vrk.functionalCommand.argument.types;
 import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ public class StringArgument extends RequiredArgument<String> {
     }
 
     @Override
-    public @NotNull Optional<String> parse(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<String> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException {
         try {
             return Optional.ofNullable(context.getArgument(getName(), String.class));
         } catch (Throwable t) {

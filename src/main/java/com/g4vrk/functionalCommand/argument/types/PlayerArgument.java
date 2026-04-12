@@ -3,6 +3,7 @@ package com.g4vrk.functionalCommand.argument.types;
 import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.bukkit.Bukkit;
@@ -35,7 +36,7 @@ public class PlayerArgument extends RequiredArgument<Player> {
     }
 
     @Override
-    public @NotNull Optional<Player> parse(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Player> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException {
         try {
             final String name = context.getArgument(getName(), String.class);
             return Optional.ofNullable(Bukkit.getPlayerExact(name));

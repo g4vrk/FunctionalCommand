@@ -3,6 +3,7 @@ package com.g4vrk.functionalCommand.argument.types;
 import com.g4vrk.functionalCommand.argument.RequiredArgument;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public class FloatArgument extends RequiredArgument<Float> {
     }
 
     @Override
-    public @NotNull Optional<Float> parse(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<Float> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException {
         try {
             return Optional.ofNullable(context.getArgument(getName(), Float.class));
         } catch (Throwable t) {

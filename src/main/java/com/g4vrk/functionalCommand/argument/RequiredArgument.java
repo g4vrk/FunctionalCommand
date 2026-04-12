@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.command.CommandSender;
@@ -98,5 +99,5 @@ public abstract class RequiredArgument<T> extends AbstractArgument<T> {
     }
 
     @Override
-    public abstract @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context);
+    public abstract @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException;
 }

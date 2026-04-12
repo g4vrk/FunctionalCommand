@@ -3,6 +3,7 @@ package com.g4vrk.functionalCommand.argument;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +55,7 @@ public class LiteralArgument extends AbstractArgument<String> {
     }
 
     @Override
-    public @NotNull Optional<String> parse(@NotNull CommandContext<CommandSender> context) {
+    public @NotNull Optional<String> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException {
         try {
             return Optional.ofNullable(context.getArgument(getName(), String.class));
         } catch (Throwable t) {

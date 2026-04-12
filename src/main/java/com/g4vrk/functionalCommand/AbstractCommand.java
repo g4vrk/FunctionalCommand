@@ -15,6 +15,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -124,7 +125,7 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
         try {
             getDispatcher().execute(input, sender);
         } catch (final CommandSyntaxException ex) {
-            sender.sendMessage(ex.getMessage());
+            sender.sendMessage(ChatColor.RED + "[!] " + ex.getMessage());
         } catch (Throwable t) {
             t.printStackTrace();
         }

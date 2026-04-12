@@ -3,6 +3,7 @@ package com.g4vrk.functionalCommand.argument;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.command.CommandSender;
@@ -99,5 +100,5 @@ public abstract class AbstractArgument<T> implements Argument<T> {
     public abstract @NotNull CommandNode<CommandSender> buildNode();
 
     @Override
-    public abstract @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context);
+    public abstract @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException;
 }
