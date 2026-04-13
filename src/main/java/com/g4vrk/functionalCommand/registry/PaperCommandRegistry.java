@@ -18,11 +18,12 @@ public class PaperCommandRegistry implements CommandRegistry {
     private final CommandMap commandMap;
     private final Map<String, Command> knownCommands;
 
-    private final Logger logger = LoggerFactory.getLogger("CommandRegistry");
+    private final Logger logger;
 
     protected PaperCommandRegistry(CommandMap commandMap, Map<String, Command> knownCommands) {
         this.commandMap = commandMap;
         this.knownCommands = knownCommands;
+        logger = LoggerFactory.getLogger("CommandRegistry");
     }
 
     @Override
@@ -52,13 +53,13 @@ public class PaperCommandRegistry implements CommandRegistry {
 
         unregister(command.getName());
 
-        String pluginName = plugin.getName().toLowerCase(Locale.ROOT);
+        String pluginName = plugin.getName();
         commandMap.register(
                 pluginName,
                 command
         );
 
-        logger.info("Команда /{}:{} зарегистрирована плагином {}.", pluginName, command.getName(), pluginName);
+        logger.info("Команда /{}:{} зарегистрирована плагином {}.", pluginName.toLowerCase(Locale.ROOT), command.getName(), pluginName);
     }
 
     @Override
@@ -82,50 +83,50 @@ public class PaperCommandRegistry implements CommandRegistry {
     public void unregister(@NotNull String name) {
         String lower = name.toLowerCase(Locale.ROOT);
 
-        Iterator<Map.Entry<String, Command>> iterator = knownCommands.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            Map.Entry<String, Command> entry = iterator.next();
+        knownCommands.entrySet().removeIf(entry -> {
             Command command = entry.getValue();
 
             if (matches(lower, command)) {
                 command.unregister(commandMap);
-                iterator.remove();
+                return true;
             }
-        }
+
+            return false;
+        });
     }
 
     @Override
     public void unregister(@NotNull Command command) {
         Validate.notNull(command, "command cannot be null");
 
-        Iterator<Map.Entry<String, Command>> iterator = knownCommands.entrySet().iterator();
+        String lowerName = command.getName().toLowerCase(Locale.ROOT);
 
-        while (iterator.hasNext()) {
-            Map.Entry<String, Command> entry = iterator.next();
+        knownCommands.entrySet().removeIf(entry -> {
             Command c = entry.getValue();
 
-            if (c == command || matches(command.getName().toLowerCase(Locale.ROOT), c)) {
+            if (c == command || matches(lowerName, c)) {
                 c.unregister(commandMap);
-                iterator.remove();
+                return true;
             }
-        }
+
+            return false;
+        });
     }
 
     @Override
     public void unregisterAll(@NotNull Plugin plugin) {
         String namespace = plugin.getName().toLowerCase(Locale.ROOT) + ":";
 
-        Iterator<Map.Entry<String, Command>> iterator = knownCommands.entrySet().iterator();
+        knownCommands.entrySet().removeIf(entry -> {
+            String key = entry.getKey().toLowerCase(Locale.ROOT);
 
-        while (iterator.hasNext()) {
-            Map.Entry<String, Command> entry = iterator.next();
-
-            if (entry.getKey().toLowerCase(Locale.ROOT).startsWith(namespace)) {
+            if (key.startsWith(namespace)) {
                 entry.getValue().unregister(commandMap);
-                iterator.remove();
+                return true;
             }
-        }
+
+            return false;
+        });
     }
 
     @Override
