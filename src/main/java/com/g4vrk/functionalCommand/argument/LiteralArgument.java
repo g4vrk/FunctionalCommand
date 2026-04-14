@@ -84,12 +84,15 @@ public class LiteralArgument extends AbstractArgument<String, LiteralArgument> {
         List<CommandNode<CommandSender>> nodes = new ObjectArrayList<>();
 
         for (String alias : getAliases()) {
-            nodes.add(
-                    LiteralArgumentBuilder.<CommandSender>literal(alias)
-                            .requires(getRequirement())
-                            .redirect(mainNode)
-                            .build()
-            );
+            final LiteralArgumentBuilder<CommandSender> argumentBuilder = LiteralArgumentBuilder.<CommandSender>literal(alias)
+                    .requires(getRequirement())
+                    .redirect(mainNode);
+
+            for (CommandNode<CommandSender> child : mainNode.getChildren()) {
+                argumentBuilder.then(child);
+            }
+
+            nodes.add(argumentBuilder.build());
         }
 
         return nodes;

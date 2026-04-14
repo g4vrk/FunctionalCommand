@@ -55,7 +55,7 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
         this(name, s -> true);
     }
 
-    public @NotNull AbstractCommand then(final @NotNull Argument<?> argument) {
+    public @NotNull AbstractCommand then(final @NotNull Argument<?, ?> argument) {
         final CommandNode<CommandSender> mainNode = argument.buildNode();
         root.then(mainNode);
 
