@@ -86,7 +86,7 @@ public class LiteralArgument extends AbstractArgument<String, LiteralArgument> {
         for (String alias : getAliases()) {
             final LiteralArgumentBuilder<CommandSender> argumentBuilder = LiteralArgumentBuilder.<CommandSender>literal(alias)
                     .requires(getRequirement())
-                    .redirect(mainNode);
+                    .executes(mainNode.getCommand());
 
             for (CommandNode<CommandSender> child : mainNode.getChildren()) {
                 argumentBuilder.then(child);
