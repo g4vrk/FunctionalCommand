@@ -56,17 +56,13 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
     }
 
     public @NotNull AbstractCommand then(final @NotNull Argument<?> argument) {
-        return then(argument.buildNode());
-    }
+        final CommandNode<CommandSender> mainNode = argument.buildNode();
+        root.then(mainNode);
 
-    public @NotNull AbstractCommand then(final @NotNull ArgumentBuilder<CommandSender, ?> node) {
-        root.then(node);
-        dispatcher = null;
-        return this;
-    }
+        for (final CommandNode<CommandSender> aliasNode : argument.buildAliases(mainNode)) {
+            root.then(aliasNode);
+        }
 
-    public @NotNull AbstractCommand then(final @NotNull CommandNode<CommandSender> node) {
-        root.then(node);
         dispatcher = null;
         return this;
     }
@@ -117,9 +113,9 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
         final String input;
 
         if (args.length == 0) {
-            input = alias;
+            input = getName();
         } else {
-            input = alias + " " + String.join(" ", args);
+            input = getName() + " " + String.join(" ", args);
         }
 
         try {
@@ -196,7 +192,7 @@ public abstract class AbstractCommand extends org.bukkit.command.Command {
             if (commandRegistry.getCommand(getName()).isEmpty()) {
                 commandRegistry.register(plugin, this);
             } else {
-                commandRegistry.override(getName(), this);
+                commandRegistry.override(getName(), plugin, this);
             }
         } else {
             commandRegistry.register(plugin, this);

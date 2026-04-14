@@ -5,13 +5,19 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class LiteralArgument extends AbstractArgument<String> {
+public class LiteralArgument extends AbstractArgument<String, LiteralArgument> {
+
+    private final List<String> aliases = new ObjectArrayList<>();
+
     public LiteralArgument(
             @NotNull String name
     ) {
@@ -40,6 +46,25 @@ public class LiteralArgument extends AbstractArgument<String> {
         super(name, command, requirement);
     }
 
+    public @NotNull LiteralArgument alias(final @NotNull String alias) {
+        this.aliases.add(alias);
+        return getThis();
+    }
+
+    public @NotNull LiteralArgument aliases(final @NotNull Collection<String> aliases) {
+        this.aliases.addAll(aliases);
+        return getThis();
+    }
+
+    public @NotNull LiteralArgument clearAliases() {
+        this.aliases.clear();
+        return getThis();
+    }
+
+    public @NotNull List<String> getAliases() {
+        return aliases;
+    }
+
     @Override
     public @NotNull CommandNode<CommandSender> buildNode() {
         final LiteralArgumentBuilder<CommandSender> argumentBuilder = LiteralArgumentBuilder.literal(getName());
@@ -52,6 +77,27 @@ public class LiteralArgument extends AbstractArgument<String> {
         }
 
         return argumentBuilder.build();
+    }
+
+    @Override
+    public @NotNull List<CommandNode<CommandSender>> buildAliases(@NotNull CommandNode<CommandSender> mainNode) {
+        List<CommandNode<CommandSender>> nodes = new ObjectArrayList<>();
+
+        for (String alias : getAliases()) {
+            nodes.add(
+                    LiteralArgumentBuilder.<CommandSender>literal(alias)
+                            .requires(getRequirement())
+                            .redirect(mainNode)
+                            .build()
+            );
+        }
+
+        return nodes;
+    }
+
+    @Override
+    public @NotNull LiteralArgument getThis() {
+        return this;
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public abstract class AbstractArgument<T> implements Argument<T> {
+public abstract class AbstractArgument<T, R extends AbstractArgument<T, R>> implements Argument<T, R> {
 
     private final String name;
 
@@ -53,27 +53,27 @@ public abstract class AbstractArgument<T> implements Argument<T> {
     }
 
     @Override
-    public @NotNull AbstractArgument<T> executes(final @NotNull Command<CommandSender> command) {
+    public @NotNull R executes(final @NotNull Command<CommandSender> command) {
         this.command = command;
-        return this;
+        return getThis();
     }
 
     @Override
-    public @NotNull AbstractArgument<T> requires(final @NotNull Predicate<CommandSender> requirement) {
+    public @NotNull R requires(final @NotNull Predicate<CommandSender> requirement) {
         this.requirement = requirement;
-        return this;
+        return getThis();
     }
 
     @Override
-    public @NotNull AbstractArgument<T> then(final @NotNull ArgumentBuilder<CommandSender, ?> node) {
+    public @NotNull R then(final @NotNull ArgumentBuilder<CommandSender, ?> node) {
         this.arguments.add(node.build());
-        return this;
+        return getThis();
     }
 
     @Override
-    public @NotNull AbstractArgument<T> then(final @NotNull CommandNode<CommandSender> node) {
+    public @NotNull R then(final @NotNull CommandNode<CommandSender> node) {
         this.arguments.add(node);
-        return this;
+        return getThis();
     }
 
     @Override

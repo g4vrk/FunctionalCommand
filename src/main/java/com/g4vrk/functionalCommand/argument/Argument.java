@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public interface Argument<T>  {
+public interface Argument<T, R extends Argument<T, R>>  {
+    @NotNull R getThis();
+
     @NotNull String getName();
 
     @NotNull Command<CommandSender> getCommand();
@@ -20,13 +22,14 @@ public interface Argument<T>  {
 
     @NotNull List<CommandNode<CommandSender>> getChildren();
 
-    @NotNull AbstractArgument<T> executes(@NotNull Command<CommandSender> command);
-    @NotNull AbstractArgument<T> requires(@NotNull Predicate<CommandSender> requirement);
+    @NotNull R executes(@NotNull Command<CommandSender> command);
+    @NotNull R requires(@NotNull Predicate<CommandSender> requirement);
 
-    @NotNull AbstractArgument<T> then(@NotNull ArgumentBuilder<CommandSender, ?> node);
-    @NotNull AbstractArgument<T> then(@NotNull CommandNode<CommandSender> node);
+    @NotNull R then(@NotNull ArgumentBuilder<CommandSender, ?> node);
+    @NotNull R then(@NotNull CommandNode<CommandSender> node);
 
     @NotNull Optional<T> parse(@NotNull CommandContext<CommandSender> context) throws CommandSyntaxException;
 
     @NotNull CommandNode<CommandSender> buildNode();
+    @NotNull List<CommandNode<CommandSender>> buildAliases(@NotNull CommandNode<CommandSender> mainNode);
 }
