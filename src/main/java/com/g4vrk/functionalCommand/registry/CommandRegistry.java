@@ -64,7 +64,7 @@ public interface CommandRegistry {
      * @param oldCommand старая команда
      * @param newCommand новая команда
      */
-    void override(@NotNull Command oldCommand, @NotNull Command newCommand);
+    void override(@NotNull Command oldCommand, @NotNull Plugin owner, @NotNull Command newCommand);
 
     /**
      * Заменяет команду по имени.
@@ -72,7 +72,7 @@ public interface CommandRegistry {
      * @param oldName    имя существующей команды
      * @param newCommand новая команда
      */
-    void override(@NotNull String oldName, @NotNull Command newCommand);
+    void override(@NotNull String oldName, @NotNull Plugin owner, @NotNull Command newCommand);
 
     /**
      * Удаляет команду по имени.

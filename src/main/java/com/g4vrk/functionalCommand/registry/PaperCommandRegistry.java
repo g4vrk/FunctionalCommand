@@ -9,7 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -69,14 +74,14 @@ public class PaperCommandRegistry implements CommandRegistry {
     }
 
     @Override
-    public void override(@NotNull Command oldCommand, @NotNull Command newCommand) {
-        unregister(oldCommand.getName());
-        register(resolveOwner(oldCommand), newCommand);
+    public void override(@NotNull Command oldCommand, @NotNull Plugin owner, @NotNull Command newCommand) {
+        unregister(oldCommand);
+        register(owner, newCommand);
     }
 
     @Override
-    public void override(@NotNull String oldName, @NotNull Command newCommand) {
-        getCommand(oldName).ifPresent(cmd -> override(cmd, newCommand));
+    public void override(@NotNull String oldName, @NotNull Plugin owner, @NotNull Command newCommand) {
+        getCommand(oldName).ifPresent(cmd -> override(cmd, owner, newCommand));
     }
 
     @Override
