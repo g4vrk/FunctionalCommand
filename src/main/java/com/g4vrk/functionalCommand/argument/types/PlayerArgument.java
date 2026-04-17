@@ -19,9 +19,14 @@ public class PlayerArgument extends RequiredArgument<Player> {
 
     public PlayerArgument(@NotNull String name) {
         super(name, StringArgumentType.word());
+
+        suggests(this::suggest);
     }
 
-    private @NotNull CompletableFuture<Suggestions> suggest(final @NotNull SuggestionsBuilder suggestionsBuilder) {
+    private @NotNull CompletableFuture<Suggestions> suggest(
+            final @NotNull CommandContext<CommandSender> context,
+            final @NotNull SuggestionsBuilder suggestionsBuilder
+    ) {
         final String lastWord = suggestionsBuilder.getRemainingLowerCase();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
